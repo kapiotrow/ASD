@@ -1,6 +1,6 @@
 #nie skonczone
 
-from typing import Any
+from typing import Any, List
 import random
 import time
 
@@ -18,9 +18,12 @@ class Element():
     def __str__(self) -> str:
         return f'{self.priority} : {self.data}'
     
+    def __repr__(self) -> str:
+        return f'{self.priority} : {self.data}'
+    
 
 class Heap():
-    def __init__(self, array=None):
+    def __init__(self, array: List=None):
         self.size = len(array)
         if array is None:
             self.array = [0]
@@ -105,12 +108,25 @@ class Heap():
             print(2 * lvl * '  ', self.array[i] if self.array[i] else None)
             self.print_tree(self.left(i), lvl + 1)
 
+
+
+def selection_sort(array: List) -> None:
+    for i in range(len(array)):
+        jmin = i
+        for j in range(i + 1, len(array)):
+            if array[j] < array[jmin]:
+                jmin = j
+        if jmin != i:
+            array[i], array[jmin] = array[jmin], array[i]
+    
+
+
 def main():
+    #heapsort-----------------
     l =  [(5,'A'), (5,'B'), (7,'C'), (2,'D'), (5,'E'), (1,'F'), (7,'G'), (5,'H'), (1,'I'), (2,'J')]
     tab = []
     for i in range(len(l)):
         tab.append(Element(l[i][1], l[i][0]))
-    print('aaa', tab)
     heap = Heap(tab)
     heap.print_tab()
     heap.print_tree(0, 0)
@@ -123,8 +139,27 @@ def main():
     heap2 = Heap(r)
     heap2.heapsort()
     t2 = time.perf_counter()
-    print("Czas obliczeń:", "{:.7f}".format(t1 - t2))
+    heap_time = t1 - t2
+    print("Czas obliczeń:", "{:.7f}".format(heap_time))
 
+
+    #selection sort-------------
+    l =  [(5,'A'), (5,'B'), (7,'C'), (2,'D'), (5,'E'), (1,'F'), (7,'G'), (5,'H'), (1,'I'), (2,'J')]
+    tab = []
+    for i in range(len(l)):
+        tab.append(Element(l[i][1], l[i][0]))
+    selection_sort(tab)
+    print('array after selection sort: ', tab)
+    print('Kolejność elementów o tym samym priorytecie jest zachowana - sortowanie jest stabilne')
+
+    r = [int(random.random() * 100) for _ in range(10000)]
+    t1 = time.perf_counter()
+    selection_sort(r)
+    t2 = time.perf_counter()
+    selection_time = t1 - t2
+    print("Czas obliczeń:", "{:.7f}".format(selection_time))
+
+    print('Heapsort jest szybszy o {:.7f}'.format(heap_time - selection_time))
     
 
 if __name__ == '__main__':
