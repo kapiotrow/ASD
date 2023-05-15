@@ -31,12 +31,16 @@ class ListGraph:
     
     def getVertexID(self, vertex: Vertex) -> int:
         return self.vertex_dict[vertex]
+    
+    def getVertex(self, id) -> int:
+        return ([vertex for vertex, val in self.vertex_dict.items() if val == id][0]).key
 
     def insertVertex(self, vertex: Vertex) -> None:
         self.vertex_dict[vertex] = self.order()
+        
         self.list.append([])
 
-    def insertEdge(self, vertex1: Vertex, vertex2: Vertex, edge: int=1) -> None:
+    def insertEdge(self, vertex1: Vertex, vertex2: Vertex, edge=1) -> None:
         id1 = self.getVertexID(vertex1)
         id2 = self.getVertexID(vertex2)
         self.list[id1].append((id2, edge))
@@ -92,8 +96,8 @@ class ListGraph:
         for i, row in enumerate(l):
             for j in row:
                 if i < j:
-                    vertex1 = [k for k, v in self.vertex_dict.items() if v == i][0]
-                    vertex2 = [k for k, v in self.vertex_dict.items() if v == j][0]
+                    vertex1 = [k.key for k, v in self.vertex_dict.items() if v == i][0]
+                    vertex2 = [k.key for k, v in self.vertex_dict.items() if v == j][0]
                     e.append((vertex2, vertex1))
         return e
     
@@ -103,9 +107,9 @@ class MST:
         self.graph = deepcopy(graph)
         self.tree = None
         self.size = self.tree.order()
-        self.intree = {0 for i in range(self.size)}
-        self.distance = {float('inf') for i in range(self.size)}
-        self.parent = {-1 for i in range(self.size)}
+        self.intree = {key:0 for key in self.graph.vertex_dict.keys()}
+        self.distance = {key:float('inf') for key in range(self.size)}
+        self.parent = {key:-1 for key in range(self.size)}
 
     @property
     def tree(self):
@@ -117,28 +121,29 @@ class MST:
         for vertex in self.graph.vertex_dict.keys():
             self.__tree.insertVertex(vertex)
 
-    def find_MST(self, vertex: Vertex):
+    def find_MST(self):
+        vertex = list(self.graph.vertex_dict.keys())[0]
         weights = []
         while self.intree[vertex] == 0:
             current = vertex
             self.intree[vertex] = 1
-            for n in self.graph.list[v]:
+            for n in self.graph.list[self.graph.getVertexID(vertex)]:
                 if n[1] < self.distance[n[0]]:
                     self.distance[n[0]] = n[1]
                     self.parent[n[0]] = current
             min_cost = float('inf')
-            for v in range(self.graph.list):
+            for v in self.graph.vertex_dict.keys():
                 if self.intree[v] == 0:
-                    if self.distance[v] < min_cost:
-                        min_cost = self.distance[v]
+                    if self.distance[self.tree.getVertexID(v)] < min_cost:
+                        min_cost = self.distance[self.tree.getVertexID(v)]
                         vertex = v
             weight = 0
-            for edge in self.graph.list[self.parent[v]]:
-                if edge[0] == vertex:
+            for edge in self.graph.list[self.graph.getVertexID(self.parent[self.graph.getVertexID(vertex)])]:
+                if edge[0] == self.graph.getVertexID(vertex):
                     weight = edge[1]
                     weights.append(weight)
                     break
-            self.tree.insertEdge(self.tree.getVertexID(self.parent[vertex]), self.tree.getVertexID(vertex))
+            self.tree.insertEdge(self.parent[self.tree.getVertexID(vertex)], vertex, weight)
 
         return sum(weights[:-1])
     
@@ -149,7 +154,7 @@ def printGraph(g):
     for i in range(n):
         v = g.getVertex(i)
         print(v, end = " -> ")
-        nbrs = g.neighbours(i)
+        nbrs = g.neighboursIdx(i)
         for (j, w) in nbrs:
             print(g.getVertex(j), w, end=";")
         print()
@@ -169,7 +174,7 @@ def main():
         g.insertEdge(Vertex(elem[0]), Vertex(elem[1]), elem[2])
 
     t = MST(g)
-    sum = t.find_MST(0)
+    sum = t.find_MST()
     printGraph(t.tree)
 
 
