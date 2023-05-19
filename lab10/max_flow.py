@@ -69,7 +69,6 @@ class ListGraph:
         id1 = self.getVertexID(vertex1)
         id2 = self.getVertexID(vertex2)
         self.list[id1].append((id2, edge))
-        self.list[id1] = sorted(set(self.list[id1]))
 
     def deleteVertex(self, vertex: Vertex) -> None:
         id = self.getVertexID(vertex)
@@ -190,7 +189,8 @@ def main():
               ('b', 't', 20), ('c', 'd', 14), ('d', 'b', 7), ('d', 't', 4)]
     graf_2 = [('s', 'a', 3), ('s', 'c', 3), ('a', 'b', 4), ('b', 's', 3), ('b', 'c', 1), ('b', 'd', 2), ('c', 'e', 6),
               ('c', 'd', 2), ('d', 't', 1), ('e', 't', 9)]
-    graf_3 = [('s', 'a', 8), ('s', 'd', 3), ('a', 'b', 9), ('b', 'd', 7), ('b', 't', 2), ('c', 't', 5), ('d', 'b', 7), ('d', 'c', 4)]
+    graf_3 = [('s', 'a', 8), ('s', 'd', 3), ('a', 'b', 9), ('b', 'd', 7), ('b', 't', 2), ('c', 't', 5), ('d', 'b', 7), 
+              ('d', 'c', 4)]
 
 
     for i in range(4):
